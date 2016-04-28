@@ -1,0 +1,9 @@
+{
+  "esversion": 6,
+  "bitwise": true,
+  "curly": true,
+  "freeze": true,
+  "eqeqeq": true,
+  "nonew": true,
+  "node": true
+}
