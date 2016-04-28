@@ -43,8 +43,8 @@ function merge(A, p, q, r)
   {
     R[j] = A[q + j + 1];
   }
-  L[n1] = Number.MAX_VALUE;
-  R[n2] = Number.MAX_VALUE;
+  L[n1] = Number.POSITIVE_INFINITY;
+  R[n2] = Number.POSITIVE_INFINITY;
   i = 0;
   j = 0;
   for (var k = p; k <= r; k++)
