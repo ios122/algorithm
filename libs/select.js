@@ -14,7 +14,6 @@
  * @return {number}   A 中, 第 i 小的元素.
  */
 function select(A, i) {
-  // console.log(`start:A:${A}`);
   if (1 === A.length) {
     return A[0];
   }
@@ -25,23 +24,17 @@ function select(A, i) {
     let sub = A.slice(i, i + subLength);
     insertionSort(sub);
     medians.push(sub[Math.ceil(sub.length / 2) - 1]);
-    // console.log(`forin: A:${A} i:${i} sub:${sub} subLength:${subLength} medians:${medians}`);
   }
-  // console.log(`after:A:${A} medians:${medians}`);
-  let x = select(medians, Math.ceil(medians.length / 2) - 1);
-  // console.log(`x:${x}`);
+  let x = select(medians, Math.ceil(medians.length / 2));
   let k = partitionX(A, x) + 1;
-  // console.log(`k:${k} A:${A} x:${x}`);
   if (k === i) {
     return x;
   }else if(i < k){
-    let sub = A.slice(0, k - 2);
-    // console.log(`i<k: sub:${sub}`);
+    let sub = A.slice(0, k - 1);
     return select(sub, i);
   }else {
-    let sub = A.slice(k, A.length - 1);
-    i = i - (A.length - sub.length);
-    // console.log(`i<k: sub:${sub}`);
+    let sub = A.slice(k, A.length);
+    i = i - k;
     return select(sub, i);
   }
 }
@@ -99,53 +92,3 @@ function exchage(A, i, j){
   A[i] = A[j];
   A[j] = tmp;
 }
-
-// --------------------------- !!!: 测试.
-function random(p, r) {
-  return Math.floor(Math.random() * (1 + r - p)) + p;
-}
-
-/**
- * 随机产生n个位于p~r之间的互异的整数.
- *
- * @param  {number} p 最小值.
- * @param  {number} r 最大值.
- * @param  {number} n 数量.
- * @return {array} n个位于p~r之间的互异的整数.
- */
-function randomNotEqual(p, r, n) {
-  if (n > r - p + 1) {
-    n = r - p + 1;
-  }
-
-  if (n <= 0) {
-    return [];
-  }
-
-  var C = [];
-
-  for (var i = p; i <= r; i++) {
-    C[i] = 0;
-  }
-
-  var randoms = [];
-
-  for (var j = 0; j < n; j++) {
-    var randomElement;
-    do {
-       randomElement = random(p, r);
-    } while (0 !== C[randomElement]);
-    randoms.push(randomElement);
-    C[randomElement] = C[randomElement] + 1;
-  }
-
-  return randoms;
-}
-
-let n = 10;
-let i = 7;
-// let A = randomNotEqual(0, n * 2, n);
-let A = [20,2,13,4,5,7,16,18,11,9];
-
-console.log(`14原始的A: ${A}`);
-console.log(`A中第${i}小的元素是:${select(A, i)}`);
