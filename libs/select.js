@@ -9,82 +9,81 @@
 /**
  * 最坏情况为线性时间的选择算法.
  *
- * @param  {array} A 无序的元素集合.
+ * @param  {array} A 无序的不同的元素集合.
  * @param  {number} i 第 i 小.
  * @return {number}   A 中, 第 i 小的元素.
  */
 function select(A, i) {
+  // console.log(`start:A:${A}`);
   if (1 === A.length) {
     return A[0];
   }
 
   let medians = [];
   for (let i = 0; i < A.length; i += 5) {
-    medians.push(A, i, Math.min(i + 4, A.length - 1));
+    let subLength = Math.min(5, A.length - i);
+    let sub = A.slice(i, i + subLength);
+    insertionSort(sub);
+    medians.push(sub[Math.ceil(sub.length / 2) - 1]);
+    // console.log(`forin: A:${A} i:${i} sub:${sub} subLength:${subLength} medians:${medians}`);
   }
-
-  let medianIdx = select(medians, Math.floor(medians.length / 2));
-  // TODO: 排列中位数?
-  // if (p === r) {
-  //   return A[p];
-  // }
-  // var q = randomizedPartition(A, p, r);
-  // var k = q - p + 1;
-  // if (i === k) {
-  //   return A[q];
-  // } if (i < k) {
-  //   return randomizedSelect(A, p, q - 1, i);
-  // }else {
-  //   return randomizedSelect(A, q + 1, r, i - k);
-  // }
-}
-
-// ----------- 以下工具代码摘自 randomizedQuicksort.js  ----------
-
-/**
- * 随机化的子数组原址重排.
- *
- * @param  {array} A 数组.
- * @param  {number} p 下标
- * @param  {number} r 下标.
- * @return {number}   下标,下标左侧的元素总是小于右侧的元素.
- */
-function randomizedPartition(A, p, r) {
-  var i = random(p, r);
-  exchage(A, r, i);
-  return partition(A, p, r);
+  // console.log(`after:A:${A} medians:${medians}`);
+  let x = select(medians, Math.ceil(medians.length / 2) - 1);
+  // console.log(`x:${x}`);
+  let k = partitionX(A, x) + 1;
+  // console.log(`k:${k} A:${A} x:${x}`);
+  if (k === i) {
+    return x;
+  }else if(i < k){
+    let sub = A.slice(0, k - 2);
+    // console.log(`i<k: sub:${sub}`);
+    return select(sub, i);
+  }else {
+    let sub = A.slice(k, A.length - 1);
+    i = i - (A.length - sub.length);
+    // console.log(`i<k: sub:${sub}`);
+    return select(sub, i);
+  }
 }
 
 /**
- * 子数组原址重排.
+ * 插入排序.
  *
- * @param  {array} A 数组.
- * @param  {number} p 下标
- * @param  {number} r 下标.
+ * @param  {array} A 一个无序的数组.
+ * @return {array}   一个有序的数组.
+ */
+function insertionSort(A)
+{
+  for (var j = 1; j < A.length; j++) {
+    var key = A[j];
+    // 插入 A[j] 到 已经排序的序列 A[1...j-1].
+    var i = j - 1;
+    while (i >= 0 && A[i] > key) {
+      A[i + 1] = A[i];
+      i = i - 1;
+    }
+
+    A[i + 1] = key;
+  }
+}
+
+/**
+ * 子数组原址重排,修改版,允许自定义大小值的分割点.
+ *
+ * @param  {array}  A 数组.
+ * @param  {number} i 大小值的分割点.
  * @return {number}   下标,下标左侧的元素总是小于右侧的元素.
  */
-function partition(A, p, r) {
-  var x =  A[r];
-  var i = p - 1;
-  for (var j = p; j <= r - 1; j++) {
+function partitionX(A, x) {
+  let i = -1;
+  for (let j = 0; j < A.length; j++) {
     if (A[j] <= x) {
       i = i + 1;
       exchage(A, i, j);
     }
   }
-  exchage(A, i + 1, r);
-  return i + 1;
-}
 
-/**
- * 返回一个 [p, r]之间的随机整数,包含p和r.
- *
- * @param  {number} p 最小值.
- * @param  {number} r 最大值.
- * @return {number}   返回一个 [p, r]之间的随机整数,包含p和r.
- */
-function random(p, r) {
-  return Math.floor(Math.random() * (1 + r - p)) + p;
+  return i;
 }
 
 /**
@@ -101,15 +100,7 @@ function exchage(A, i, j){
   A[j] = tmp;
 }
 
-// -------------- 补充两个随机数算法. -----------------
-
-/**
- * 返回一个 [p, r]之间的随机整数,包含p和r.
- *
- * @param  {number} p 最小值.
- * @param  {number} r 最大值.
- * @return {number}   返回一个 [p, r]之间的随机整数,包含p和r.
- */
+// --------------------------- !!!: 测试.
 function random(p, r) {
   return Math.floor(Math.random() * (1 + r - p)) + p;
 }
@@ -151,34 +142,10 @@ function randomNotEqual(p, r, n) {
   return randoms;
 }
 
-/**
- * 插入排序.
- *
- * @param  {array} A 一个无序的数组.
- *
- * @return {array}   一个有序的数组.
- */
-/**
- * 对数组的指定部分进行插入排序,并返回此区域的中位数.
- *
- * @param  {array} A 输入数组,
- * @param  {number} p 起点.
- * @param  {number} r 终点.
- * @return {number}   p~r之间的中位数,如果有偶数个中位数,约定返回较小的中位数.
- */
-function median(A,p,r)
-{
-  for (let j = p + 1; j <= r; j++) {
-    let key = A[j];
-    // 插入 A[j] 到 已经排序的序列 A[1...j-1].
-    let i = j - 1;
-    while (i >= p && A[i] > key) {
-      A[i + 1] = A[i];
-      i = i - 1;
-    }
+let n = 10;
+let i = 7;
+// let A = randomNotEqual(0, n * 2, n);
+let A = [20,2,13,4,5,7,16,18,11,9];
 
-    A[i + 1] = key;
-  }
-
-  return A[Math.floor((p + r) / 2)];
-}
+console.log(`14原始的A: ${A}`);
+console.log(`A中第${i}小的元素是:${select(A, i)}`);
