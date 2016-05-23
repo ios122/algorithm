@@ -121,7 +121,7 @@ function treePredecessor(x){
  * 将一个新值 v 插入到一棵二叉搜索树T中.
  *
  * @param  {object} T 二叉搜索树,{root: object}.
- * @param  {object} z {key:v, left:null, right:null}.
+ * @param  {object} z {key:v,p:null, left:null, right:null}.
  */
 function treeInsert(T, z){
   let y = null;
@@ -198,7 +198,7 @@ function randomBuild(A)
   randomizeInPlace(A);
   let T = {root: null};
   for (let i = 0; i < A.length; i++) {
-    treeInsert(T, A[i]);
+    treeInsert(T, {key:A[i],p:null, left:null, right:null});
   }
   return T;
 }
@@ -221,4 +221,3 @@ function randomizeInPlace(A)
     A[randomIdx] = tmp;
   }
 }
-// TODO: 待测试.
